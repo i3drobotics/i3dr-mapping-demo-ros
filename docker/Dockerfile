@@ -45,6 +45,10 @@ ENV CUDA_CACHE_MAXSIZE=2147483647
 ENV CUDA_CACHE_DISABLE=0
 ENV CUDA_CACHE_PATH=/root/.nv/ComputeCache
 
+# Create folder for storing I3DRSGM license files
+# Will copy *.lic files to correct folder/s on startup
+RUN mkdir -p /root/.i3dr/lic
+
 # Install ROS
 RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list && \
     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
@@ -59,8 +63,6 @@ RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws
 
 # Install ROS packages
-# (Update ROS_PACKAGES_CACHE to new value if packages need updating)
-ENV ROS_PACKAGES_CACHE=Jr7AHOmxVJ2gSxCS9cfN
 COPY install/i3dr-ros-mapping-demo-http.rosinstall /tmp/i3dr-ros-mapping-demo-http.rosinstall
 RUN source /opt/ros/melodic/setup.bash && \
     wstool init src /tmp/i3dr-ros-mapping-demo-http.rosinstall && \
@@ -70,9 +72,9 @@ RUN source /opt/ros/melodic/setup.bash && \
 RUN source /opt/ros/melodic/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
 
-# Add package files
+# Add build files to package folder
 RUN mkdir -p /root/catkin_ws/src/i3dr-ros-mapping-demo
-COPY . /root/catkin_ws/src/i3dr-ros-mapping-demo/
+COPY CMakeLists.txt package.xml /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Install ROS dependencies
 RUN apt-get update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro melodic
 
@@ -80,9 +82,9 @@ RUN apt-get update && rosdep update -y && rosdep install --from-paths src --igno
 RUN source /opt/ros/melodic/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
 
-# Create folder for storing I3DRSGM license files
-# Will copy *.lic files to correct folder/s on startup
-RUN mkdir -p /root/.i3dr/lic
+# Copy source files to package folder
+COPY config /root/catkin_ws/src/i3dr-ros-mapping-demo/config
+COPY launch /root/catkin_ws/src/i3dr-ros-mapping-demo/launch
 
 # Setup entrypoint
 COPY docker/entry.bash /
