@@ -72,12 +72,15 @@ RUN source /opt/ros/melodic/setup.bash && \
 RUN source /opt/ros/melodic/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
 
-# Add build files to package folder
 RUN mkdir -p /root/catkin_ws/src/i3dr-ros-mapping-demo
-COPY CMakeLists.txt package.xml /root/catkin_ws/src/i3dr-ros-mapping-demo/
+
+# Add package file to package folder
+COPY package.xml /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Install ROS dependencies
 RUN apt-get update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro melodic
 
+# Add build files to package folder
+COPY CMakeLists.txt /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Build catkin workspace
 RUN source /opt/ros/melodic/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
