@@ -14,7 +14,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES \
     ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 
 # Install required software
-RUN apt-get update && apt-get -y --no-install-recommends install \
+RUN apt update && apt install -y --no-install-recommends \
         software-properties-common \
         ca-certificates \
         build-essential \
@@ -29,17 +29,19 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
 
 SHELL ["/bin/bash", "-c"]
 
+RUN apt update && add-apt-repository ppa:linuxuprising/libpng12 -y && \
+    apt install libpng12-0 && \
+    rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
+
 RUN wget https://www.baslerweb.com/fp-1615275617/media/downloads/software/pylon_software/pylon_6.2.0.21487-deb0_amd64.deb && \
     wget https://bugs.launchpad.net/~ubuntu-security-proposed/+archive/ubuntu/ppa/+build/18845128/+files/libicu55_55.1-7ubuntu0.5_amd64.deb && \
     wget http://security.ubuntu.com/ubuntu/pool/universe/x/xerces-c/libxerces-c3.1_3.1.3+debian-1_amd64.deb && \
-    wget https://launchpad.net/~ubuntu-security/+archive/ubuntu/ppa/+build/15108504/+files/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb && \
-    wget https://github.com/i3drobotics/phobosIntegration/releases/download/v1.0.54/Phobos-1.0.54-x86_64_reducedTemplates.deb
-
-RUN dpkg -i pylon_6.2.0.21487-deb0_amd64.deb && \
+    wget https://github.com/i3drobotics/phobosIntegration/releases/download/v1.0.54/Phobos-1.0.54-x86_64_reducedTemplates.deb && \
+    dpkg -i pylon_6.2.0.21487-deb0_amd64.deb && \
     dpkg -i libicu55_55.1-7ubuntu0.5_amd64.deb && \
     dpkg -i libxerces-c3.1_3.1.3+debian-1_amd64.deb && \
-    dpkg -i libpng12-0_1.2.54-1ubuntu1.1_amd64.deb && \
-    dpkg -i Phobos-1.0.54-x86_64_reducedTemplates.deb
+    dpkg -i Phobos-1.0.54-x86_64_reducedTemplates.deb && \
+    rm -rf pylon_6.2.0.21487-deb0_amd64.deb libicu55_55.1-7ubuntu0.5_amd64.deb libxerces-c3.1_3.1.3+debian-1_amd64.deb Phobos-1.0.54-x86_64_reducedTemplates.deb
 
 # CUDA variables required JIT compilation
 # CUDA_CACHE_PATH should be used to attach a volume for caching the JIT compilation
