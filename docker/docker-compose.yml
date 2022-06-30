@@ -1,8 +1,8 @@
-version: '2.3'
+version: '3'
 services:
 
   ros-master:
-    image: ros:melodic-ros-core
+    image: ros:${ROS_DISTRO}-ros-core
     command: stdbuf -o L roscore
     runtime: runc
     networks:
@@ -18,11 +18,11 @@ services:
       dockerfile: docker/Dockerfile
     depends_on:
       - ros-master
-    runtime: nvidia
+    # runtime: nvidia
     entrypoint: ['${ENTRYFILE}']
     hostname: ${I3DRSGM_HOSTNAME}
-    devices:
-     - "/dev/bus/usb:/dev/bus/usb"
+    # devices:
+    #  - "/dev/bus/usb:/dev/bus/usb"
     environment:
      - ROS_MASTER_URI=http://ros-master:11311
      - ROS_HOSTNAME=${ROS_MAPPING_HOSTNAME}

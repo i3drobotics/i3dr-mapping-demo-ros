@@ -1,4 +1,6 @@
-FROM nvidia/cudagl:10.2-devel-ubuntu18.04
+ARG UBUNTU_VERSION=20.04
+ARG CUDA_VERSION=11.3.0
+FROM nvidia/cudagl:${CUDA_VERSION}-devel-ubuntu${UBUNTU_VERSION}
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -45,17 +47,18 @@ ENV CUDA_CACHE_MAXSIZE=2147483647
 ENV CUDA_CACHE_DISABLE=0
 ENV CUDA_CACHE_PATH=/root/.nv/ComputeCache
 
-# Create folder for storing I3DRSGM license files
-# Will copy *.lic files to correct folder/s on startup
-RUN mkdir -p /root/.i3dr/lic
+# # Create folder for storing I3DRSGM license files
+# # Will copy *.lic files to correct folder/s on startup
+# RUN mkdir -p /root/.i3dr/lic
 
 # Install ROS
+ARG ROS_DISTRO=noetic
 RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list && \
     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
-    apt-get update && apt-get install -y ros-melodic-ros-base && \
+    apt-get update && apt-get install -y ros-${ROS_DISTRO}-ros-base && \
     apt-get install -y python-rosdep python-rosinstall python-rosinstall-generator && \
     apt-get install -y python-wstool python-catkin-pkg python-catkin-tools && \
-    apt-get install -y ros-melodic-rviz ros-melodic-rqt && \
+    apt-get install -y ros-${ROS_DISTRO}-rviz ros-${ROS_DISTRO}-rqt && \
     rosdep init && rosdep fix-permissions && rosdep update -y
 
 # Create catkin workspace
@@ -63,13 +66,13 @@ RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws
 
 # Install ROS packages
-COPY install/i3dr-ros-mapping-demo-http.rosinstall /tmp/i3dr-ros-mapping-demo-http.rosinstall
-RUN source /opt/ros/melodic/setup.bash && \
-    wstool init src /tmp/i3dr-ros-mapping-demo-http.rosinstall && \
+COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosinstall
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
+    wstool init src /tmp/i3dr-mapping-demo-http.rosinstall && \
     echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/master/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list && \
-    apt-get update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro melodic
+    apt-get update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROS_DISTRO}
 # Build catkin workspace
-RUN source /opt/ros/melodic/setup.bash && \
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
 
 RUN mkdir -p /root/catkin_ws/src/i3dr-ros-mapping-demo
@@ -77,12 +80,12 @@ RUN mkdir -p /root/catkin_ws/src/i3dr-ros-mapping-demo
 # Add package file to package folder
 COPY package.xml /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Install ROS dependencies
-RUN apt-get update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro melodic
+RUN apt-get update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROS_DISTRO}
 
 # Add build files to package folder
 COPY CMakeLists.txt /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Build catkin workspace
-RUN source /opt/ros/melodic/setup.bash && \
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
 
 # Copy source files to package folder

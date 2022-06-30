@@ -1,6 +1,26 @@
 # I3DR Mapping Demo ROS Package
 Demonstration of mapping with I3DR stereo cameras in ROS.
 
+## Build
+```bash
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws
+source /opt/ros/${ROS_DISTRO}/setup.bash
+git clone https://github.com/i3drobotics/i3dr-mapping-demo-ros.git ~/catkin_ws/src/i3dr-mapping-demo-ros
+sudo echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/master/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list
+wstool init src ~/catkin_ws/src/i3dr-mapping-demo-ros/i3dr-mapping-demo-http.rosinstall
+sudo apt-get update
+rosdep update -y
+rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROS_DISTRO}
+catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
+```
+
+## Run
+```bash
+source ~/catkin_ws/devel/setup.bash
+roslaunch --wait i3dr_mapping_demo mapping_demo.launch camera_type:=titania camera_serial:=746974616e24318 stereo_algorithm:=2 rviz:=true exposure:=10000
+```
+
 ## Docker
 ### Build
 Docker configuration is available for running containerised. Use the following command to build the docker image:

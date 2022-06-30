@@ -1,2 +1,6 @@
-docker/*
-!docker/entry.bash
+docker/docker-compose.yml
+docker/docker-compose-win.yml
+docker/Dockerfile
+docker/.env
+docker/.env.template
+docker/.gitignore
