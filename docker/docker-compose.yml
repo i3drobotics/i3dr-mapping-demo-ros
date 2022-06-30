@@ -1,0 +1,45 @@
+version: '2.3'
+services:
+
+  ros-master:
+    image: ros:melodic-ros-core
+    command: stdbuf -o L roscore
+    runtime: runc
+    networks:
+      i3drrosnet:
+        ipv4_address: ${ROS_MASTER_HOSTNAME}
+        aliases:
+          - ros-master
+
+  i3dr-mapping-demo-ros:
+    image: i3dr/i3dr-mapping-demo-ros:latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - ros-master
+    runtime: nvidia
+    entrypoint: ['${ENTRYFILE}']
+    hostname: ${I3DRSGM_HOSTNAME}
+    devices:
+     - "/dev/bus/usb:/dev/bus/usb"
+    environment:
+     - ROS_MASTER_URI=http://ros-master:11311
+     - ROS_HOSTNAME=${ROS_MAPPING_HOSTNAME}
+     - HOST_ID=${I3DRSGM_HOST_ID}
+     - DISPLAY=${DISPLAY_IP}:0.0
+     - QT_X11_NO_MITSHM=1
+    volumes:
+     - "./licenses:/root/.i3dr/lic:rw"
+     - "../.nv:/root/.nv:rw"
+     - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    networks:
+      i3drrosnet:
+        ipv4_address: ${ROS_MAPPING_HOSTNAME}
+
+networks:
+  i3drrosnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${ROS_SUBNET}
