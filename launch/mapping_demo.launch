@@ -3,7 +3,7 @@
   <!-- titania/phobos -->
   <arg name="camera_type" default="titania"/>
   <arg name="camera_serial" default="746974616e24318"/>
-  <arg name="camera_namespace" default="$(eval arg('camera_type') + '_' + arg('camera_serial'))"/>
+  <arg name="camera_namespace" default="$(eval 'i3dr_' + arg('camera_type') + '_' + arg('camera_serial'))"/>
   <arg name="urdf_namespace" default="$(arg camera_namespace)"/>
   <arg name="map_frame_id" default="map"/>
   <arg name="grid_size" default="0.05"/>
@@ -22,7 +22,8 @@
 
   <arg name="rgb_topic" default="/$(arg camera_namespace)/left/image_rect" />
 
-  <arg name="camera_launch_file" value="$(eval find(i3dr_$(arg camera_type)) + '/launch/' + arg('camera_type') + '.launch')"/>
+  <arg name="camera_package" value="i3dr_$(arg camera_type)"/>
+  <arg name="camera_launch_file" value="$(eval find(arg('camera_package')) + '/launch/' + arg('camera_type') + '.launch')"/>
 
   <include file="$(arg camera_launch_file)">
     <arg name="camera_serial" default="746974616e24318"/>

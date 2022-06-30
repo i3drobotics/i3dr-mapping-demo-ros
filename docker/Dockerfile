@@ -59,6 +59,8 @@ RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws
 
 # Install ROS packages
+# (Update ROS_PACKAGES_CACHE to new value if packages need updating)
+ENV ROS_PACKAGES_CACHE=Jr7AHOmxVJ2gSxCS9cfN
 COPY install/i3dr-ros-mapping-demo-http.rosinstall /tmp/i3dr-ros-mapping-demo-http.rosinstall
 RUN source /opt/ros/melodic/setup.bash && \
     wstool init src /tmp/i3dr-ros-mapping-demo-http.rosinstall && \
