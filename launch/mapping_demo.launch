@@ -1,8 +1,9 @@
 <launch>
 
-  <arg name="camera_namespace" default="deimos"/>
-  <!-- deimos/phobos_nuclear -->
-  <arg name="camera_model" default="$(arg camera_namespace)"/>
+  <!-- titania/phobos -->
+  <arg name="camera_type" default="titania"/>
+  <arg name="camera_serial" default="746974616e24318"/>
+  <arg name="camera_namespace" default="$(eval arg('camera_type') + '_' + arg('camera_serial'))"/>
   <arg name="urdf_namespace" default="$(arg camera_namespace)"/>
   <arg name="map_frame_id" default="map"/>
   <arg name="grid_size" default="0.05"/>
@@ -13,7 +14,6 @@
   <arg name="localization" default="false"/>
   <arg name="database_path" default="~/.ros/rtabmap.db"/>
   <arg name="clearMapOnStart" default="true" />
-  <arg name="camera_en" default="false"/>
   <arg name="imu" default="false" />
   <!-- true/false -->
   <arg name="rviz" default="false"/>
@@ -22,23 +22,15 @@
 
   <arg name="rgb_topic" default="/$(arg camera_namespace)/left/image_rect" />
 
-  <arg if="$(arg camera_en)" name="package" value="i3dr_$(arg camera_model)"/>
-  <arg if="$(arg camera_en)" name="camera_left_device_user_id" default="$(eval 'file://' + find(arg('package')) + '/calibration/' + arg('camera_model') + '_left.yaml')" doc="Calibration file for left camera (Only used in offline mode)"/>
-  <arg if="$(arg camera_en)" name="camera_right_device_user_id" default="$(eval 'file://' + find(arg('package')) + '/calibration/' + arg('camera_model') + '_right.yaml')" doc="Calibration file for left camera (Only used in offline mode)"/>
+  <arg name="camera_launch_file" value="$(eval find(i3dr_$(arg camera_type)) + '/launch/' + arg('camera_type') + '.launch')"/>
 
-  <group if="$(arg camera_en)">
-    <arg name="camera_launch_file" value="$(eval find(arg('package')) + '/launch/' + arg('camera_model') + '.launch')"/>
-
-    <include file="$(arg camera_launch_file)">
-      <arg name="camera_namespace" value="$(arg camera_namespace)"/>
-      <arg name="camera_model" value="$(arg camera_model)"/>
-      <arg name="urdf_namespace" value="$(arg urdf_namespace)"/>
-      <arg name="cameraLeft_info_url" value="$(arg camera_left_device_user_id)" />
-      <arg name="cameraRight_info_url" value="$(arg camera_right_device_user_id)" />
-      <arg name="stereo_algorithm" value="$(arg stereo_algorithm)"/>
-      <arg name="exposure" value="$(arg exposure)"/>
-    </include>
-  </group>
+  <include file="$(arg camera_launch_file)">
+    <arg name="camera_serial" default="746974616e24318"/>
+    <arg name="camera_namespace" value="$(arg camera_namespace)"/>
+    <arg name="urdf_namespace" value="$(arg urdf_namespace)"/>
+    <arg name="stereo_algorithm" value="$(arg stereo_algorithm)"/>
+    <arg name="exposure" value="$(arg exposure)"/>
+  </include>
 
   <!-- rviz for debugging -->
   <node if="$(arg rviz)" pkg="rviz" type="rviz" name="standalone_rtabmap_rivz" args="-d $(find i3dr_rtabmap)/config/test_mapping_$(arg camera_model).rviz"/>

@@ -1,4 +1,4 @@
-version: '2.3'
+version: '3'
 services:
 
   ros-master:
@@ -18,11 +18,8 @@ services:
       dockerfile: docker/Dockerfile
     depends_on:
       - ros-master
-    runtime: nvidia
     entrypoint: ['${ENTRYFILE}']
     hostname: ${I3DRSGM_HOSTNAME}
-    devices:
-     - "/dev/bus/usb:/dev/bus/usb"
     environment:
      - ROS_MASTER_URI=http://ros-master:11311
      - ROS_HOSTNAME=${ROS_MAPPING_HOSTNAME}

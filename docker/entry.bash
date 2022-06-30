@@ -20,4 +20,4 @@ fi
 # source catkin workspace
 source /root/catkin_ws/devel/setup.bash
 
-roslaunch --wait i3dr_ros_mapping mapping_demo.launch stereo_algorithm:=2 rviz:=true exposure:=10000 camera_left_device_user_id:=I3DRTitania_746974616e24318_l camera_right_device_user_id:=I3DRTitania_746974616e24318_r
+roslaunch --wait i3dr_mapping_demo mapping_demo.launch camera_type:=${I3DR_CAMERA_TYPE} camera_serial:=${I3DR_CAMERA_SERIAL} stereo_algorithm:=2 rviz:=true exposure:=10000
