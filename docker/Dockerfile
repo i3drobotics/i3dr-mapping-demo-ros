@@ -76,16 +76,13 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
 # Build OpenCV from source
 ENV OPENCV_BRANCH=3.4.18
-ENV OPENCV_UPDATE_CACHE=Zf4fKq2gzpefpmUUcLwY
 RUN mkdir -p /root/opencv_build && \
     cd /root/opencv_build && \
     git clone https://github.com/opencv/opencv.git -b ${OPENCV_BRANCH} && \
     cd /root/opencv_build/opencv && \
-    mkdir build && \
-    mkdir /root/opencv_install
+    mkdir build
 RUN cd /root/opencv_build/opencv/build && \
     cmake ../ \
-    -DCMAKE_INSTALL_PREFIX=/root/opencv_install \
     -DWITH_CUDA=OFF \
     -DBUILD_TESTS=OFF \
     -DBUILD_PERF_TESTS=OFF \
@@ -105,8 +102,7 @@ RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws
 
 # Install vision_opencv ROS package from source
-ENV VISION_OPENCV_UPDATE_CACHE=UPXeyabyMrm72uk2HCDL
-RUN git clone https://github.com/i3drobotics/vision_opencv.git -b external-opencv /root/catkin_ws/src/vision_opencv && \
+RUN git clone https://github.com/ros-perception/vision_opencv.git /root/catkin_ws/src/vision_opencv && \
     git clone https://github.com/ros-perception/image_pipeline.git /root/catkin_ws/src/image_pipeline
 # Install ROS dependencies
 RUN apt-get update && rosdep update -y && \
