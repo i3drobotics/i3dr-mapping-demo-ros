@@ -54,18 +54,46 @@ ENV CUDA_CACHE_PATH=/root/.nv/ComputeCache
 # RUN mkdir -p /root/.i3dr/lic
 
 # Install ROS
-ARG ROS_DISTRO=noetic
+ENV ROS_DISTRO=noetic
+ENV PYTHON_PREFIX=python3
 RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list && \
     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
     apt-get update && apt-get install -y ros-${ROS_DISTRO}-ros-base && \
-    apt-get install -y python-rosdep python-rosinstall python-rosinstall-generator && \
-    apt-get install -y python-wstool python-catkin-pkg python-catkin-tools && \
+    apt-get install -y ${PYTHON_PREFIX}-rosdep ${PYTHON_PREFIX}-rosinstall ${PYTHON_PREFIX}-rosinstall-generator && \
+    apt-get install -y ${PYTHON_PREFIX}-wstool ${PYTHON_PREFIX}-catkin-pkg ${PYTHON_PREFIX}-catkin-tools && \
     apt-get install -y ros-${ROS_DISTRO}-rviz ros-${ROS_DISTRO}-rqt && \
     rosdep init && rosdep fix-permissions && rosdep update -y
+
+# Install OpenCV dependencies
+RUN apt update && \
+    apt install -y \
+    cmake gcc g++ git \
+    ${PYTHON_PREFIX}-dev ${PYTHON_PREFIX}-numpy \
+    libavcodec-dev libavformat-dev libswscale-dev \
+    libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev \
+    libgtk-3-dev \
+    libpng-dev libjpeg-dev libopenexr-dev libtiff-dev libwebp-dev && \
+    rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
+# Build OpenCV from source
+ENV OPENCV_VERSION=3.2.0
+RUN mkdir -p /root/opencv_build && \
+    cd /root/opencv_build && \
+    git clone https://github.com/opencv/opencv.git -b ${OPENCV_VERSION} && \
+    mkdir build && \
+    cd build && \
+    cmake ../ && \
+    make && \
+    sudo make install
 
 # Create catkin workspace
 RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws
+
+# Install vision_opencv ROS package from source
+RUN git clone https://github.com/ros-perception/vision_opencv.git /root/catkin_ws/src/vision_opencv
+# Build catkin workspace
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
+    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # Install ROS packages
 COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosinstall
