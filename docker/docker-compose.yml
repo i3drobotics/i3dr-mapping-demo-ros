@@ -2,7 +2,7 @@ version: '3'
 services:
 
   ros-master:
-    image: ros:${ROS_DISTRO}-ros-core
+    image: ros:noetic-ros-core
     command: stdbuf -o L roscore
     runtime: runc
     networks:

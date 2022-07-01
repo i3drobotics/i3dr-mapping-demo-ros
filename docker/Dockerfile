@@ -82,7 +82,14 @@ RUN mkdir -p /root/opencv_build && \
     cd /root/opencv_build/opencv && \
     mkdir build
 RUN cd /root/opencv_build/opencv/build && \
-    cmake ../ -DWITH_CUDA:BOOL="0" && \
+    cmake ../ \
+    -DWITH_CUDA=OFF \
+    -DBUILD_TESTS=OFF \
+    -DBUILD_PERF_TESTS=OFF \
+    -DBUILD_DOCS=OFF \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_opencv_apps=OFF
+RUN cd /root/opencv_build/opencv/build && \
     make -j$(nproc)
 RUN cd /root/opencv_build/opencv/build && \
     make install && \
