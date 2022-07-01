@@ -83,7 +83,8 @@ RUN mkdir -p /root/opencv_build && \
     mkdir build
 RUN cd /root/opencv_build/opencv/build && \
     cmake ../ -DWITH_CUDA:BOOL="0" && \
-    make -j$(nproc) && \
+    make -j$(nproc)
+RUN cd /root/opencv_build/opencv/build && \
     make install && \
     cd /root/ && \
     # cleanup
