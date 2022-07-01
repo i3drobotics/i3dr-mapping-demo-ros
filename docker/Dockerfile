@@ -75,10 +75,11 @@ RUN apt update && \
     libpng-dev libjpeg-dev libopenexr-dev libtiff-dev libwebp-dev && \
     rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
 # Build OpenCV from source
-ENV OPENCV_BRANCH=3.2
+ENV OPENCV_BRANCH=3.4.18
+ENV OPENCV_UPDATE_CACHE=Zf4fKq2gzpefpmUUcLwY
 RUN mkdir -p /root/opencv_build && \
     cd /root/opencv_build && \
-    git clone https://github.com/i3drobotics/opencv.git -b ${OPENCV_BRANCH} && \
+    git clone https://github.com/opencv/opencv.git -b ${OPENCV_BRANCH} && \
     cd /root/opencv_build/opencv && \
     mkdir build
 RUN cd /root/opencv_build/opencv/build && \
@@ -112,7 +113,7 @@ COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosin
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     wstool init src /tmp/i3dr-mapping-demo-http.rosinstall && \
     echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/master/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list && \
-    apt-get update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROS_DISTRO}
+    apt-get update && rosdep update -y && rosdep install --from-paths src -r -y --rosdistro ${ROS_DISTRO}
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
@@ -122,7 +123,7 @@ RUN mkdir -p /root/catkin_ws/src/i3dr-ros-mapping-demo
 # Add package file to package folder
 COPY package.xml /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Install ROS dependencies
-RUN apt-get update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROS_DISTRO}
+RUN apt-get update && rosdep update -y && rosdep install --from-paths src -r -y --rosdistro ${ROS_DISTRO}
 
 # Add build files to package folder
 COPY CMakeLists.txt /root/catkin_ws/src/i3dr-ros-mapping-demo/
