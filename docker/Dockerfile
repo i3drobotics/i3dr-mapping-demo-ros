@@ -79,10 +79,12 @@ ENV OPENCV_BRANCH=3.4.18
 RUN mkdir -p /root/opencv_build && \
     cd /root/opencv_build && \
     git clone https://github.com/opencv/opencv.git -b ${OPENCV_BRANCH} && \
+    git clone https://github.com/opencv/opencv_contrib.git -b ${OPENCV_BRANCH} && \
     cd /root/opencv_build/opencv && \
     mkdir build
 RUN cd /root/opencv_build/opencv/build && \
     cmake ../ \
+    -DOPENCV_EXTRA_MODULES_PATH=/root/opencv_build/opencv_contrib/modules \
     -DWITH_CUDA=OFF \
     -DBUILD_TESTS=OFF \
     -DBUILD_PERF_TESTS=OFF \
