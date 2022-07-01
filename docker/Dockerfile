@@ -116,6 +116,7 @@ RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
 
 # Install ROS packages
 COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosinstall
+ENV ROSINSTALL_PACKAGES_UPDATE_CACHE=sl7bP86AOjiX1aAYq8ub
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     wstool init src /tmp/i3dr-mapping-demo-http.rosinstall && \
     echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/master/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list && \
