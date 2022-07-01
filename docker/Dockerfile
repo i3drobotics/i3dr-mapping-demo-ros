@@ -111,7 +111,7 @@ RUN git clone https://github.com/i3drobotics/vision_opencv.git -b external-openc
 # Install ROS dependencies
 RUN apt-get update && rosdep update -y && \
     rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
-    --skip-keys="libopencv-devpython3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
+    --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DOPENCV_DIR=/root/opencv_install
@@ -123,7 +123,7 @@ RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/master/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list && \
     apt-get update && rosdep update -y && \
     rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
-    --skip-keys="libopencv-devpython3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
+    --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON -DOPENCV_DIR=/root/opencv_install
@@ -135,7 +135,7 @@ COPY package.xml /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Install ROS dependencies
 RUN apt-get update && rosdep update -y && \
     rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
-    --skip-keys="libopencv-devpython3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
+    --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
 
 # Add build files to package folder
 COPY CMakeLists.txt /root/catkin_ws/src/i3dr-ros-mapping-demo/
