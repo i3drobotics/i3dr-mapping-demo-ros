@@ -75,10 +75,10 @@ RUN apt update && \
     libpng-dev libjpeg-dev libopenexr-dev libtiff-dev libwebp-dev && \
     rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
 # Build OpenCV from source
-ENV OPENCV_VERSION=3.2.0
+ENV OPENCV_BRANCH=3.2
 RUN mkdir -p /root/opencv_build && \
     cd /root/opencv_build && \
-    git clone https://github.com/opencv/opencv.git -b ${OPENCV_VERSION} && \
+    git clone https://github.com/i3drobotics/opencv.git -b ${OPENCV_BRANCH} && \
     cd /root/opencv_build/opencv && \
     mkdir build
 RUN cd /root/opencv_build/opencv/build && \
