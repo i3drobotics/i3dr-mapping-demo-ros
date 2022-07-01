@@ -110,7 +110,7 @@ RUN apt-get update && rosdep update -y && \
     --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DOPENCV_DIR=/root/opencv_install
+    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # Install ROS packages
 COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosinstall
@@ -122,7 +122,7 @@ RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON -DOPENCV_DIR=/root/opencv_install
+    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
 
 RUN mkdir -p /root/catkin_ws/src/i3dr-ros-mapping-demo
 
@@ -137,7 +137,7 @@ RUN apt-get update && rosdep update -y && \
 COPY CMakeLists.txt /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON -DOPENCV_DIR=/root/opencv_install
+    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
 
 # Copy source files to package folder
 COPY config /root/catkin_ws/src/i3dr-ros-mapping-demo/config
