@@ -79,10 +79,10 @@ ENV OPENCV_VERSION=3.2.0
 RUN mkdir -p /root/opencv_build && \
     cd /root/opencv_build && \
     git clone https://github.com/opencv/opencv.git -b ${OPENCV_VERSION} && \
-    cd opencv && \
-    mkdir build && \
-    cd build && \
-    cmake ../ && \
+    cd /root/opencv_build/opencv && \
+    mkdir build
+RUN cd /root/opencv_build/opencv/build && \
+    cmake ../ -DWITH_CUDA:BOOL="0" && \
     make && \
     make install && \
     cd /root/ && \
