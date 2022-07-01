@@ -79,11 +79,15 @@ ENV OPENCV_VERSION=3.2.0
 RUN mkdir -p /root/opencv_build && \
     cd /root/opencv_build && \
     git clone https://github.com/opencv/opencv.git -b ${OPENCV_VERSION} && \
+    cd opencv && \
     mkdir build && \
     cd build && \
     cmake ../ && \
     make && \
-    sudo make install
+    make install && \
+    cd /root/ && \
+    # cleanup
+    rm -rf /root/opencv_build
 
 # Create catkin workspace
 RUN mkdir -p /root/catkin_ws/src
