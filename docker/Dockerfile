@@ -109,7 +109,9 @@ ENV VISION_OPENCV_UPDATE_CACHE=UPXeyabyMrm72uk2HCDL
 RUN git clone https://github.com/i3drobotics/vision_opencv.git -b external-opencv /root/catkin_ws/src/vision_opencv && \
     git clone https://github.com/ros-perception/image_pipeline.git /root/catkin_ws/src/image_pipeline
 # Install ROS dependencies
-RUN apt-get update && rosdep update -y && rosdep install --from-paths src -r -y --rosdistro ${ROS_DISTRO}
+RUN apt-get update && rosdep update -y && \
+    rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
+    --skip-keys="libopencv-devpython3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DOPENCV_DIR=/root/opencv_install
@@ -119,7 +121,9 @@ COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosin
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     wstool init src /tmp/i3dr-mapping-demo-http.rosinstall && \
     echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/master/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list && \
-    apt-get update && rosdep update -y && rosdep install --from-paths src -r -y --rosdistro ${ROS_DISTRO}
+    apt-get update && rosdep update -y && \
+    rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
+    --skip-keys="libopencv-devpython3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON -DOPENCV_DIR=/root/opencv_install
@@ -129,7 +133,9 @@ RUN mkdir -p /root/catkin_ws/src/i3dr-ros-mapping-demo
 # Add package file to package folder
 COPY package.xml /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Install ROS dependencies
-RUN apt-get update && rosdep update -y && rosdep install --from-paths src -r -y --rosdistro ${ROS_DISTRO}
+RUN apt-get update && rosdep update -y && \
+    rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
+    --skip-keys="libopencv-devpython3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
 
 # Add build files to package folder
 COPY CMakeLists.txt /root/catkin_ws/src/i3dr-ros-mapping-demo/
