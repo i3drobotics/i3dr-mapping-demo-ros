@@ -81,9 +81,11 @@ RUN mkdir -p /root/opencv_build && \
     cd /root/opencv_build && \
     git clone https://github.com/opencv/opencv.git -b ${OPENCV_BRANCH} && \
     cd /root/opencv_build/opencv && \
-    mkdir build
+    mkdir build && \
+    mkdir /root/opencv_install
 RUN cd /root/opencv_build/opencv/build && \
     cmake ../ \
+    -DCMAKE_INSTALL_PREFIX=/root/opencv_install \
     -DWITH_CUDA=OFF \
     -DBUILD_TESTS=OFF \
     -DBUILD_PERF_TESTS=OFF \
@@ -103,10 +105,13 @@ RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws
 
 # Install vision_opencv ROS package from source
-RUN git clone https://github.com/ros-perception/vision_opencv.git /root/catkin_ws/src/vision_opencv
+RUN git clone https://github.com/ros-perception/vision_opencv.git /root/catkin_ws/src/vision_opencv && \
+    git clone https://github.com/ros-perception/image_pipeline.git /root/catkin_ws/src/image_pipeline
+# Install ROS dependencies
+RUN apt-get update && rosdep update -y && rosdep install --from-paths src -r -y --rosdistro ${ROS_DISTRO}
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release
+    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DOPENCV_DIR=/root/opencv_install
 
 # Install ROS packages
 COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosinstall
@@ -116,7 +121,7 @@ RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     apt-get update && rosdep update -y && rosdep install --from-paths src -r -y --rosdistro ${ROS_DISTRO}
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
+    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON -DOPENCV_DIR=/root/opencv_install
 
 RUN mkdir -p /root/catkin_ws/src/i3dr-ros-mapping-demo
 
@@ -129,7 +134,7 @@ RUN apt-get update && rosdep update -y && rosdep install --from-paths src -r -y 
 COPY CMakeLists.txt /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
+    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON -DOPENCV_DIR=/root/opencv_install
 
 # Copy source files to package folder
 COPY config /root/catkin_ws/src/i3dr-ros-mapping-demo/config
