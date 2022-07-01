@@ -105,7 +105,7 @@ RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws
 
 # Install vision_opencv ROS package from source
-RUN git clone https://github.com/ros-perception/vision_opencv.git /root/catkin_ws/src/vision_opencv && \
+RUN git clone https://github.com/i3drobotics/vision_opencv.git -b external-opencv /root/catkin_ws/src/vision_opencv && \
     git clone https://github.com/ros-perception/image_pipeline.git /root/catkin_ws/src/image_pipeline
 # Install ROS dependencies
 RUN apt-get update && rosdep update -y && rosdep install --from-paths src -r -y --rosdistro ${ROS_DISTRO}
