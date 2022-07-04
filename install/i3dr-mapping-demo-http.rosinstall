@@ -13,7 +13,7 @@
 - git:
     local-name: pylon_camera
     uri: https://github.com/i3drobotics/pylon_camera.git
-    version: master
+    version: main
 - git:
     local-name: camera_control_msgs
     uri: https://github.com/i3drobotics/camera_control_msgs.git
