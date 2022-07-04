@@ -116,10 +116,10 @@ RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
 
 # Install ROS packages
 COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosinstall
-ENV ROSINSTALL_PACKAGES_UPDATE_CACHE=sl7bP86AOjiX1aAYq8ub
+ENV ROSINSTALL_PACKAGES_UPDATE_CACHE=tn4g0vgupRcxq9oIYNVj
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     wstool init src /tmp/i3dr-mapping-demo-http.rosinstall && \
-    echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/master/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list && \
+    echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/main/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list && \
     apt-get update && rosdep update -y && \
     rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
     --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"

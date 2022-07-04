@@ -7,7 +7,7 @@ mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws
 source /opt/ros/${ROS_DISTRO}/setup.bash
 git clone https://github.com/i3drobotics/i3dr-mapping-demo-ros.git ~/catkin_ws/src/i3dr-mapping-demo-ros
-sudo echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/master/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list
+sudo echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/main/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list
 wstool init src ~/catkin_ws/src/i3dr-mapping-demo-ros/i3dr-mapping-demo-http.rosinstall
 sudo apt-get update
 rosdep update -y
