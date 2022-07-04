@@ -40,12 +40,13 @@ RUN dpkg -i pylon_6.2.0.21487-deb0_amd64.deb && \
     dpkg -i Phobos-1.0.54-x86_64_reducedTemplates.deb
 
 # Install ROS
+ENV ROS_DISTRO=melodic
 RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list && \
     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
-    apt-get update && apt-get install -y ros-melodic-ros-base && \
+    apt-get update && apt-get install -y ros-${ROS_DISTRO}-ros-base && \
     apt-get install -y python-rosdep python-rosinstall python-rosinstall-generator && \
     apt-get install -y python-wstool python-catkin-pkg python-catkin-tools && \
-    apt-get install -y ros-melodic-rviz ros-melodic-rqt && \
+    apt-get install -y ros-${ROS_DISTRO}-rviz ros-${ROS_DISTRO}-rqt && \
     rosdep init && rosdep fix-permissions && rosdep update -y
 
 # Create catkin workspace
@@ -55,10 +56,10 @@ WORKDIR /root/catkin_ws
 # Install ROS packages
 COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosinstall
 ENV ROSINSTALL_PACKAGES_UPDATE_CACHE=tn4g0vgupRcxq9oIYNVj
-RUN source /opt/ros/melodic/setup.bash && \
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     wstool init src /tmp/i3dr-mapping-demo-http.rosinstall && \
     echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/main/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list && \
-    apt-get update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro melodic
+    apt update && rosdep update -y && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROS_DISTRO}
 
 # CUDA variables required JIT compilation
 # CUDA_CACHE_PATH should be used to attach a volume for caching the JIT compilation
@@ -67,7 +68,7 @@ ENV CUDA_CACHE_DISABLE=0
 ENV CUDA_CACHE_PATH=/root/.nv/ComputeCache
 
 # Build catkin workspace
-RUN source /opt/ros/melodic/setup.bash && \
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
 
 # Create folder for storing I3DRSGM license files
