@@ -104,29 +104,38 @@ RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws
 
 # Install vision_opencv ROS package from source
-RUN git clone https://github.com/ros-perception/vision_opencv.git /root/catkin_ws/src/vision_opencv && \
-    git clone https://github.com/ros-perception/image_pipeline.git /root/catkin_ws/src/image_pipeline
-# Install ROS dependencies
-ENV ROS_VISIMG_UPDATE_CACHE=YSFQ39ks2X5QXhwOB5mT
-RUN apt-get update && rosdep update -y && \
-    rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
-    --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
-# Build catkin workspace
-RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release
+RUN git clone https://github.com/ros-perception/vision_opencv.git /root/catkin_ws/src/vision_opencv
+ENV ROSDEP_SKIP_KEYS="libopencv-dev python3-opencv cv_bridge image_geometry"
+# Install image_pipeline ROS package from source
+RUN git clone https://github.com/ros-perception/image_pipeline.git /root/catkin_ws/src/image_pipeline
+ENV ROSDEP_SKIP_KEYS="${ROSDEP_SKIP_KEYS} stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
+# Install image_transport_plugins ROS package from source
+RUN git clone https://github.com/ros-perception/image_transport_plugins.git /root/catkin_ws/src/image_transport_plugins
+ENV ROSDEP_SKIP_KEYS="${ROSDEP_SKIP_KEYS} compressed_depth_image_transport compressed_image_transport image_transport_plugins theora_image_transport"
+# Install rtabmap package from source
+RUN git clone https://github.com/introlab/rtabmap.git -b noetic-devel /root/catkin_ws/src/rtabmap
+ENV ROSDEP_SKIP_KEYS="${ROSDEP_SKIP_KEYS} rtabmap"
+# Install apriltag package from source
+RUN git clone https://github.com/AprilRobotics/apriltag.git /root/catkin_ws/src/apriltag
+ENV ROSDEP_SKIP_KEYS="${ROSDEP_SKIP_KEYS} apriltag"
+# Install apriltag ROS package from source
+RUN git clone https://github.com/AprilRobotics/apriltag_ros.git /root/catkin_ws/src/apriltag_ros
+ENV ROSDEP_SKIP_KEYS="${ROSDEP_SKIP_KEYS} apriltag_ros"
+# Install apriltag ROS package from source
+RUN git clone https://github.com/introlab/find-object.git -b noetic-devel /root/catkin_ws/src/find-object
+ENV ROSDEP_SKIP_KEYS="${ROSDEP_SKIP_KEYS} find_object_2d"
+# Install rtabmap ROS package from source
+RUN git clone https://github.com/introlab/rtabmap_ros.git -b noetic-devel /root/catkin_ws/src/rtabmap_ros
+ENV ROSDEP_SKIP_KEYS="${ROSDEP_SKIP_KEYS} rtabmap_ros"
 
 # Install ROS packages
 COPY install/i3dr-mapping-demo-http.rosinstall /tmp/i3dr-mapping-demo-http.rosinstall
 ENV ROSINSTALL_PACKAGES_UPDATE_CACHE=tn4g0vgupRcxq9oIYNVj
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     wstool init src /tmp/i3dr-mapping-demo-http.rosinstall && \
-    echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/main/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list && \
-    apt update && rosdep update -y && \
-    rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
-    --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
-# Build catkin workspace
-RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
+    echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/main/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list
+RUN apt update && rosdep update -y && rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
+    --skip-keys="${ROSDEP_SKIP_KEYS}"
 
 RUN mkdir -p /root/catkin_ws/src/i3dr-ros-mapping-demo
 
@@ -135,19 +144,19 @@ COPY package.xml /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Install ROS dependencies
 RUN apt-get update && rosdep update -y && \
     rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
-    --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
+    --skip-keys="${ROSDEP_SKIP_KEYS}"
 
 # Add build files to package folder
 COPY CMakeLists.txt /root/catkin_ws/src/i3dr-ros-mapping-demo/
 # Build catkin workspace
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
+    catkin_make_isolated --cmake-args -DCMAKE_BUILD_TYPE=Release -DWITH_I3DRSGM=ON
 
 # Copy source files to package folder
 COPY config /root/catkin_ws/src/i3dr-ros-mapping-demo/config
 COPY launch /root/catkin_ws/src/i3dr-ros-mapping-demo/launch
 
 # Setup entrypoint
-COPY docker/entry.bash /
+COPY docker/entry.bash /entry.bash
 RUN ["chmod", "+x", "/entry.bash"]
 ENTRYPOINT ["/entry.bash"]
