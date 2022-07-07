@@ -107,6 +107,7 @@ WORKDIR /root/catkin_ws
 RUN git clone https://github.com/ros-perception/vision_opencv.git /root/catkin_ws/src/vision_opencv && \
     git clone https://github.com/ros-perception/image_pipeline.git /root/catkin_ws/src/image_pipeline
 # Install ROS dependencies
+ENV ROS_VISIMG_UPDATE_CACHE=YSFQ39ks2X5QXhwOB5mT
 RUN apt-get update && rosdep update -y && \
     rosdep install --from-paths src -y -r --rosdistro ${ROS_DISTRO} \
     --skip-keys="libopencv-dev python3-opencv cv_bridge image_geometry stereo_image_proc image_view image_rotate image_publisher image_proc image_pipeline depth_image_proc camera_calibration"
