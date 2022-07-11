@@ -2,7 +2,7 @@ version: '3'
 services:
 
   ros-master:
-    image: ros:noetic-ros-core
+    image: ros:melodic-ros-core
     command: stdbuf -o L roscore
     runtime: runc
     networks:
@@ -11,22 +11,17 @@ services:
         aliases:
           - ros-master
 
-  i3dr-mapping-demo-ros:
-    image: i3dr/i3dr-mapping-demo-ros:latest
+  i3dr-stereo-camera-demo-ros:
+    image: i3dr/i3dr-stereo-camera-demo-ros:latest
     build:
       context: ../
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/stereo-camera-ros/Dockerfile
     depends_on:
       - ros-master
-    # runtime: nvidia
-    entrypoint: ['${ENTRYFILE}']
-    hostname: ${I3DRSGM_HOSTNAME}
-    # devices:
-    #  - "/dev/bus/usb:/dev/bus/usb"
+    entrypoint: ['/entry.bash']
     environment:
      - ROS_MASTER_URI=http://ros-master:11311
-     - ROS_HOSTNAME=${ROS_MAPPING_HOSTNAME}
-     - HOST_ID=${I3DRSGM_HOST_ID}
+     - ROS_HOSTNAME=${ROS_STEREO_CAMERA_HOSTNAME}
      - DISPLAY=${DISPLAY_IP}:0.0
      - QT_X11_NO_MITSHM=1
      - I3DR_CAMERA_TYPE=${I3DR_CAMERA_TYPE}
@@ -37,7 +32,42 @@ services:
      - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
     networks:
       i3drrosnet:
+        ipv4_address: ${ROS_STEREO_CAMERA_HOSTNAME}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+
+  i3dr-mapping-demo-ros:
+    image: i3dr/i3dr-mapping-demo-ros:latest
+    build:
+      context: ../
+      dockerfile: docker/mapping-ros/Dockerfile
+    depends_on:
+      - ros-master
+    entrypoint: ['/entry.bash']
+    hostname: ${I3DRSGM_HOSTNAME}
+    environment:
+     - ROS_MASTER_URI=http://ros-master:11311
+     - ROS_HOSTNAME=${ROS_MAPPING_HOSTNAME}
+     - HOST_ID=${I3DRSGM_HOST_ID}
+     - DISPLAY=${DISPLAY_IP}:0.0
+     - QT_X11_NO_MITSHM=1
+    volumes:
+     - "./licenses:/root/.i3dr/lic:rw"
+     - "../.nv:/root/.nv:rw"
+     - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    networks:
+      i3drrosnet:
         ipv4_address: ${ROS_MAPPING_HOSTNAME}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
 
 networks:
   i3drrosnet:

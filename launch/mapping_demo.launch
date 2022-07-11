@@ -22,25 +22,13 @@
 
   <arg name="rgb_topic" default="/$(arg camera_namespace)/left/image_rect" />
 
-  <arg name="camera_package" value="i3dr_$(arg camera_type)"/>
-  <arg name="camera_launch_file" value="$(eval find(arg('camera_package')) + '/launch/' + arg('camera_type') + '.launch')"/>
-
-  <include file="$(arg camera_launch_file)">
-    <arg name="camera_serial" default="746974616e24318"/>
-    <arg name="camera_namespace" value="$(arg camera_namespace)"/>
-    <arg name="urdf_namespace" value="$(arg urdf_namespace)"/>
-    <arg name="stereo_algorithm" value="$(arg stereo_algorithm)"/>
-    <arg name="exposure" value="$(arg exposure)"/>
-  </include>
-
   <!-- rviz for debugging -->
-  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="standalone_rtabmap_rivz" args="-d $(find i3dr_rtabmap)/config/test_mapping_$(arg camera_model).rviz"/>
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="standalone_rtabmap_rivz" args="-d $(find i3dr_mapping_demo)/config/test_mapping_$(arg camera_type).rviz"/>
 
   <!-- STEREO REGISTRATOIN -->
-  <include file="$(find i3dr_rtabmap)/launch/stereo_localisation.launch">
+  <include file="$(find i3dr_mapping_demo)/launch/stereo_localisation.launch">
     <arg name="rgb_topic" value="$(arg rgb_topic)" />
     <arg name="camera_namespace" value="$(arg camera_namespace)" />
-    <arg name="camera_model" value="$(arg camera_model)"/>
     <arg name="urdf_namespace" value="$(arg urdf_namespace)"/>
     <arg name="slow_processing" value="false"/>
     <arg name="custom_rtabmap" value="true"/>

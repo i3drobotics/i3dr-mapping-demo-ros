@@ -1,6 +1,5 @@
 <launch>
     <arg name="camera_namespace" default="stereo" />
-    <arg name="camera_model" default="$(arg camera_namespace)"/>
     <arg name="urdf_namespace" default="$(arg camera_namespace)"/>
     <arg name="slow_processing" default="false"/>
     <arg name="localization" default="false"/>
@@ -27,9 +26,9 @@
     <!-- DISPLAY -->
     <!-- run rviz with config file -->
     <node if="$(arg rviz)" pkg="rviz" type="rviz" name="stereo_localisation_rivz" 
-        args="-d $(find i3dr_rtabmap)/rviz/stereo_localisation.rviz"/>
+        args="-d $(find i3dr_mapping_demo)/rviz/stereo_localisation.rviz"/>
 
-    <include if="$(arg custom_rtabmap)" file="$(find i3dr_rtabmap)/launch/rtabmap_custom.launch">
+    <include if="$(arg custom_rtabmap)" file="$(find i3dr_mapping_demo)/launch/rtabmap_custom.launch">
         <arg name="args" value="$(arg args)"/>
 
         <arg name="stereo" value="false" />
