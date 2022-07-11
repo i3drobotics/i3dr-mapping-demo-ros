@@ -117,7 +117,7 @@ ENV ROSDEP_SKIP_KEYS="${ROSDEP_SKIP_KEYS} stereo_image_proc image_view image_rot
 
 # Install ROS packages
 COPY install/i3dr-stereo-camera-http.rosinstall /tmp/i3dr-stereo-camera-http.rosinstall
-ENV ROSINSTALL_PACKAGES_UPDATE_CACHE=hyCW8NRfUU5SwBxhaOT5
+ENV ROSINSTALL_PACKAGES_UPDATE_CACHE=FTUcW5JEVQW5vCwxPy44
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     wstool init src /tmp/i3dr-stereo-camera-http.rosinstall && \
     echo "yaml https://raw.githubusercontent.com/i3drobotics/pylon_camera/main/rosdep/pylon_sdk.yaml " > /etc/ros/rosdep/sources.list.d/15-plyon_camera.list
